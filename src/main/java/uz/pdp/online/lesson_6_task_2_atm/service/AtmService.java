@@ -122,7 +122,7 @@ public class AtmService {
         boolean bool = false;
         if (card.getPinCode() != cardDto.getPinCode()) {
             for (Map.Entry<String, Integer> entry : hm.entrySet()) {
-                if (entry.getKey().equals(cardDto.getNumber())) {
+                if (entry.getKey().equals(cardDto.getNumber().toString())) {
                     bool = true;
                     if (entry.getValue() == 3) {
                         card.setActive(false);
