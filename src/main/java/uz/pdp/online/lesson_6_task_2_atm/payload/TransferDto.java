@@ -18,7 +18,7 @@ public class TransferDto {
     private Long number;
 
     @NotNull
-    private String pinCode;
+    private short pinCode;
 
 
 }

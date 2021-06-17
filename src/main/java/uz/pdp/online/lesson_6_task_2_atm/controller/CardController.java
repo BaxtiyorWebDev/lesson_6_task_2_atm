@@ -39,11 +39,6 @@ public class CardController {
         return cardPage;
     }
 
-    @PutMapping
-    public HttpEntity<?> editCard(@RequestBody CardDto cardDto) {
-        ApiResponse apiResponse = cardService.editCard(cardDto);
-        return ResponseEntity.status(apiResponse.isSuccess()?200:409).body(apiResponse);
-    }
 
     @DeleteMapping("/{cardNumber}")
     public HttpEntity<?> deleteCardByCardNumber(@PathVariable Long cardNumber) {

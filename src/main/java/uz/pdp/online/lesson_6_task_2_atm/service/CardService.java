@@ -59,22 +59,6 @@ public class CardService {
         return new ApiResponse("Sizda kartani qo'shishga ruxsat yo'q", false);
     }
 
-    public ApiResponse editCard(CardDto cardDto) {
-        boolean detectAuthentication = DetectAuthenticationService.detectAuthForDirectorOrEmployee();
-        if (detectAuthentication) {
-            Optional<Card> optionalCard = cardRepos.findByNumber(cardDto.getNumber());
-            if (!optionalCard.isPresent())
-                return new ApiResponse("Karta topilmadi", false);
-
-            Card editingCard = optionalCard.get();
-            editingCard.setHolderName(cardDto.getHolderName());
-            editingCard.setPinCode(cardDto.getPinCode());
-            editingCard.setActive(cardDto.isActive());
-            cardRepos.save(editingCard);
-            return new ApiResponse("Karta ma'lumotlari tahrirlandi", true);
-        }
-        return new ApiResponse("Sizda kartani tahrirlashga ruxsat yo'q", false);
-    }
 
     public Card getCardByUserId(UUID userId) {
         boolean detectAuthentication = DetectAuthenticationService.detectAuthForDirectorOrEmployee();

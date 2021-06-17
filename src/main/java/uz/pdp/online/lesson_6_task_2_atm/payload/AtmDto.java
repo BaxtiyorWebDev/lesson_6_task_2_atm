@@ -1,6 +1,7 @@
 package uz.pdp.online.lesson_6_task_2_atm.payload;
 
 import lombok.Data;
+import uz.pdp.online.lesson_6_task_2_atm.entity.AtmMoneyCase;
 
 import javax.validation.constraints.NotNull;
 

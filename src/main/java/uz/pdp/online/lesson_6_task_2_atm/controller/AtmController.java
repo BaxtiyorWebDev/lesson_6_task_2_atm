@@ -54,11 +54,6 @@ public class AtmController {
         return ResponseEntity.status(apiResponse.isSuccess()?200:409).body(apiResponse);
     }
 
-    @PostMapping("/card/verify")
-    public HttpEntity<?> verifyCard(@RequestBody CardDto cardDto) {
-        ApiResponse apiResponse = atmService.verifyCard(cardDto);
-        return ResponseEntity.status(apiResponse.isSuccess()?200:409).body(apiResponse);
-    }
 
     // xodim bankomatga pul qo'yishi
     @PutMapping("/inputMoneyForEmployee/atmId/{id}")

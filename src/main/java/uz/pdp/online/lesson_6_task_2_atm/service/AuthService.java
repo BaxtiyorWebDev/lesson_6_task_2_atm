@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import uz.pdp.online.lesson_6_task_2_atm.component.DetectAuthenticationService;
 import uz.pdp.online.lesson_6_task_2_atm.component.EmailSender;
 import uz.pdp.online.lesson_6_task_2_atm.entity.User;
 import uz.pdp.online.lesson_6_task_2_atm.entity.enums.RoleEnum;
@@ -58,21 +59,25 @@ public class AuthService implements UserDetailsService {
     }
 
     public ApiResponse register(RegisterDto registerDto) {
-        boolean existsByEmail = userRepos.existsByEmail(registerDto.getEmail());
-        if (existsByEmail)
-            return new ApiResponse("Bunday foydalanuvchi tizimda mavjud", false);
-        User addingUser = new User();
-        addingUser.setFullName(registerDto.getFullName());
-        addingUser.setEmail(registerDto.getEmail());
-        if (registerDto.getRoleId() == 1)
-            return new ApiResponse("Tizimga direktor ro'li mavjud", false);
-        addingUser.setRoles(Collections.singleton(roleRepos.getById(registerDto.getRoleId())));
-        addingUser.setPassword(passwordEncoder.encode("1234"));
-        addingUser.setEmailCode(UUID.randomUUID().toString());
-        userRepos.save(addingUser);
+        boolean authForDirectorOrEmployee = DetectAuthenticationService.detectAuthForDirectorOrEmployee();
+        if (authForDirectorOrEmployee) {
+            boolean existsByEmail = userRepos.existsByEmail(registerDto.getEmail());
+            if (existsByEmail)
+                return new ApiResponse("Bunday foydalanuvchi tizimda mavjud", false);
+            User addingUser = new User();
+            addingUser.setFullName(registerDto.getFullName());
+            addingUser.setEmail(registerDto.getEmail());
+            if (registerDto.getRoleId() == 1)
+                return new ApiResponse("Tizimga direktor ro'li mavjud", false);
+            addingUser.setRoles(Collections.singleton(roleRepos.getById(registerDto.getRoleId())));
+            addingUser.setPassword(passwordEncoder.encode("1234"));
+            addingUser.setEmailCode(UUID.randomUUID().toString());
+            userRepos.save(addingUser);
 
-        mailSender.sendEmail(addingUser.getEmail(), addingUser.getEmailCode());
-        return new ApiResponse("Foydalanuvchi MO ga kiritildi", true);
+            mailSender.sendEmail(addingUser.getEmail(), addingUser.getEmailCode());
+            return new ApiResponse("Foydalanuvchi MO ga kiritildi", true);
+        }
+        return new ApiResponse("Siz tizimga foydalanuvchilarni ro'yxatdan o'tkiza olmaysiz",false);
     }
 
     public ApiResponse verifyEmail(String email, String emailCode, LoginDto loginDto) {
