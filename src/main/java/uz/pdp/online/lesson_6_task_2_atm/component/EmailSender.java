@@ -10,7 +10,7 @@ import uz.pdp.online.lesson_6_task_2_atm.payload.ApiResponse;
 @Component
 public class EmailSender {
     @Autowired
-    JavaMailSender javaMailSender;
+    private JavaMailSender javaMailSender;
 
     public ApiResponse sendEmail(String sendingEmail, String emailCode) {
         try {

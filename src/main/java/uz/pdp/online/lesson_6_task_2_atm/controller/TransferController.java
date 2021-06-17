@@ -19,7 +19,7 @@ import java.util.UUID;
 public class TransferController {
 
     @Autowired
-    TransferService transferService;
+    private TransferService transferService;
 
     // bankomatdan pul yechish
     @PutMapping("/outcome")

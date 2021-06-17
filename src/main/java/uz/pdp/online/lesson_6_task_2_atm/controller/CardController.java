@@ -17,7 +17,7 @@ import java.util.UUID;
 public class CardController {
 
     @Autowired
-    CardService cardService;
+    private CardService cardService;
 
 
     @PostMapping
@@ -27,9 +27,9 @@ public class CardController {
     }
 
     @GetMapping("/{userId}")
-    public Card getCardById(@PathVariable UUID userId) {
+    public HttpEntity<?> getCardById(@PathVariable UUID userId) {
         Card cardById = cardService.getCardByUserId(userId);
-        return cardById;
+        return ResponseEntity.status(cardById!=null?200:409).body(cardById);
     }
 
 

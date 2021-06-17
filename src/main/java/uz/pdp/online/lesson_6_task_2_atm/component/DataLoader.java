@@ -20,13 +20,13 @@ import java.util.Collections;
 public class DataLoader implements CommandLineRunner {
 
     @Autowired
-    CardTypeRepos cardTypeRepos;
+    private CardTypeRepos cardTypeRepos;
     @Autowired
-    RoleRepos roleRepos;
+    private RoleRepos roleRepos;
     @Autowired
-    UserRepos userRepos;
+    private UserRepos userRepos;
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @Value("${spring.sql.init.enabled}")
     private String mode;

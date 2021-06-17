@@ -31,17 +31,17 @@ import java.util.UUID;
 public class AuthService implements UserDetailsService {
 
     @Autowired
-    UserRepos userRepos;
+    private UserRepos userRepos;
     @Autowired
-    RoleRepos roleRepos;
+    private RoleRepos roleRepos;
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
     @Autowired
-    EmailSender mailSender;
+    private EmailSender mailSender;
     @Autowired
-    AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
     @Autowired
-    JwtProvider jwtProvider;
+    private JwtProvider jwtProvider;
 
 
     public ApiResponse login(LoginDto loginDto) {
@@ -61,27 +61,18 @@ public class AuthService implements UserDetailsService {
         boolean existsByEmail = userRepos.existsByEmail(registerDto.getEmail());
         if (existsByEmail)
             return new ApiResponse("Bunday foydalanuvchi tizimda mavjud", false);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
-        for (GrantedAuthority authority : user.getAuthorities()) {
-            if (authority.getAuthority().equals(RoleEnum.DIRECTOR.name()) || authority.getAuthority().equals(RoleEnum.EMPLOYEE.name())) {
-                User addingUser = new User();
-                addingUser.setFullName(registerDto.getFullName());
-                addingUser.setEmail(registerDto.getEmail());
-                if (registerDto.getRoleId() == 1)
-                    return new ApiResponse("Tizimga direktor ro'li mavjud", false);
-                addingUser.setRoles(Collections.singleton(roleRepos.getById(registerDto.getRoleId())));
-                addingUser.setPassword(passwordEncoder.encode("1234"));
-                addingUser.setEmailCode(UUID.randomUUID().toString());
-                userRepos.save(addingUser);
+        User addingUser = new User();
+        addingUser.setFullName(registerDto.getFullName());
+        addingUser.setEmail(registerDto.getEmail());
+        if (registerDto.getRoleId() == 1)
+            return new ApiResponse("Tizimga direktor ro'li mavjud", false);
+        addingUser.setRoles(Collections.singleton(roleRepos.getById(registerDto.getRoleId())));
+        addingUser.setPassword(passwordEncoder.encode("1234"));
+        addingUser.setEmailCode(UUID.randomUUID().toString());
+        userRepos.save(addingUser);
 
-                mailSender.sendEmail(addingUser.getEmail(), addingUser.getEmailCode());
-                return new ApiResponse("Foydalanuvchi MO ga kiritildi", true);
-            } else {
-                return new ApiResponse("Ushbu amalni bajarish uchun sizga huquq berilmagan", false);
-            }
-        }
-        return null;
+        mailSender.sendEmail(addingUser.getEmail(), addingUser.getEmailCode());
+        return new ApiResponse("Foydalanuvchi MO ga kiritildi", true);
     }
 
     public ApiResponse verifyEmail(String email, String emailCode, LoginDto loginDto) {

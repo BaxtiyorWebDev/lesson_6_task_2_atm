@@ -24,9 +24,9 @@ import java.util.Properties;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    AuthService authService;
+    private AuthService authService;
     @Autowired
-    JwtFilter jwtFilter;
+    private JwtFilter jwtFilter;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

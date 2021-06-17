@@ -13,4 +13,6 @@ public interface CardRepos extends JpaRepository<Card, UUID> {
     Optional<Card> findByNumberAndUserId(Long number, UUID user_id);
 
     Optional<Card> findAllByUserId(UUID user_id);
+
+    boolean existsByNumberAndCvv(Long number, Integer cvv);
 }

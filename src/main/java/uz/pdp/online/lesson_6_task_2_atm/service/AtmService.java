@@ -27,15 +27,15 @@ import java.util.UUID;
 public class AtmService {
 
     @Autowired
-    AtmRepos atmRepos;
+    private AtmRepos atmRepos;
     @Autowired
-    CardTypeRepos cardTypeRepos;
+    private CardTypeRepos cardTypeRepos;
     @Autowired
-    BankRepos bankRepos;
+    private BankRepos bankRepos;
     @Autowired
-    CardRepos cardRepos;
+    private CardRepos cardRepos;
     @Autowired
-    Calculation calculation;
+    private Calculation calculation;
 
     public ApiResponse addAtm(AtmDto atmDto) {
         boolean detectAuthentication = DetectAuthenticationService.detectAuthForDirectorOrEmployee();
@@ -146,7 +146,7 @@ public class AtmService {
             if (!optionalAtm.isPresent())
                 return new ApiResponse("Bankomat topilmadi", false);
             Atm atm = optionalAtm.get();
-            Integer balance = calculation.balance(atm.getAtmMoneyCase());
+            ApiResponse balance = calculation.balance(atm.getAtmMoneyCase());
             return new ApiResponse("Bankomat hisobi: " + balance, true);
         } else {
             return new ApiResponse("Sizga ushbu amalni bajarishga ruxsat yo'q",false);

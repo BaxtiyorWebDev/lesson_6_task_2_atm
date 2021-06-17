@@ -16,9 +16,9 @@ import java.util.Optional;
 public class BankService {
 
     @Autowired
-    BankRepos bankRepos;
+    private BankRepos bankRepos;
     @Autowired
-    DetectAuthenticationService detectAuthenticationService;
+    private DetectAuthenticationService detectAuthenticationService;
 
 
     public ApiResponse addBank(BankDto bankDto) {

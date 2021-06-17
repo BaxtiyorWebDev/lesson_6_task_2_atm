@@ -17,9 +17,9 @@ import java.util.UUID;
 public class ReportController {
 
     @Autowired
-    AtmService atmService;
+    private AtmService atmService;
     @Autowired
-    TransferService transferService;
+    private TransferService transferService;
 
     //bankomat hisobini ko'rish
     @GetMapping("/{id}")
@@ -29,27 +29,27 @@ public class ReportController {
     }
 
     @GetMapping
-    public List<Transfer> getAll() {
+    public HttpEntity<List<Transfer>> getAll() {
         List<Transfer> allTransferList = transferService.getAll();
-        return allTransferList;
+        return ResponseEntity.status(allTransferList!=null?200:409).body(allTransferList);
     }
 
     @GetMapping("/income")
-    public List<Transfer> getIncome(@RequestBody UUID atmId) {
+    public HttpEntity<List<Transfer>> getIncome(@RequestBody UUID atmId) {
         List<Transfer> income = transferService.getIncome(atmId);
-        return income;
+        return ResponseEntity.status(income!=null?200:409).body(income);
     }
 
     @GetMapping("/outcome")
-    public List<Transfer> getOutcome(@RequestBody UUID atmId) {
+    public HttpEntity<List<Transfer>> getOutcome(@RequestBody UUID atmId) {
         List<Transfer> outcome = transferService.getOutcome(atmId);
-        return outcome;
+        return ResponseEntity.status(outcome!=null?200:409).body(outcome);
     }
 
     @GetMapping("/byEmployee")
-    public List<Transfer> getTransferByWorker(@RequestBody UUID atmId, @RequestBody UUID employeeId) {
+    public HttpEntity<List<Transfer>> getTransferByWorker(@RequestBody UUID atmId, @RequestBody UUID employeeId) {
         List<Transfer> byEmployee = transferService.getByEmployee(atmId, employeeId);
-        return byEmployee;
+        return ResponseEntity.status(byEmployee!=null?200:409).body(byEmployee);
     }
 
 }

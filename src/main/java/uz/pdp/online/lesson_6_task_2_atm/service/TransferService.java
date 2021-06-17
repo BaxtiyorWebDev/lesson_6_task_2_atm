@@ -22,19 +22,19 @@ import java.util.UUID;
 @Service
 public class TransferService {
     @Autowired
-    AtmRepos atmRepos;
+    private AtmRepos atmRepos;
     @Autowired
-    AtmMoneyCaseRepos atmMoneyCaseRepos;
+    private AtmMoneyCaseRepos atmMoneyCaseRepos;
     @Autowired
-    TransferRepos transferRepos;
+    private TransferRepos transferRepos;
     @Autowired
-    CardRepos cardRepos;
+    private CardRepos cardRepos;
     @Autowired
-    Calculation calculation;
+    private Calculation calculation;
     @Autowired
-    UserRepos userRepos;
+    private UserRepos userRepos;
     @Autowired
-    EmailSender emailSender;
+    private EmailSender emailSender;
 
     public ApiResponse update(UUID atmId, AtmMoneyCase atmMoneyCaseDto) {
         boolean detectAuthentication = DetectAuthenticationService.detectAuthForEmployee();
@@ -141,14 +141,16 @@ public class TransferService {
             return new ApiResponse("Bankomat ushbu turdagi kartaga xizmat ko'rsatmaydi", false);
 
         AtmMoneyCase atmMoneyCase = atm.getAtmMoneyCase();
-        Integer balance = calculation.balance(atmMoneyCase);
+        ApiResponse balance = calculation.balance(atmMoneyCase);
 
-        if (balance < (transferDto.getAmount() * 0.01) + transferDto.getAmount() ||
-                transferDto.getAmount() > atm.getMaxWithdrawAmount() ||
-                transferDto.getAmount() < atm.getMinWithdrawAmount())
-            return new ApiResponse("Xatolik", false);
         try {
             if (card.getCardType().equals(CardTypeEnum.VIZA)) {
+
+                if (balance.getUsd() < (transferDto.getAmount() * 0.01) + transferDto.getAmount() ||
+                        transferDto.getAmount() > atm.getMaxWithdrawAmount() ||
+                        transferDto.getAmount() < atm.getMinWithdrawAmount())
+                    return new ApiResponse("Summa miqdori notog'ri kiritildi", false);
+
                 AtmMoneyCase atmMoneyCase1 = calculation.balanceToAtm(transferDto.getAmount(), "usd");
                 if (atmMoneyCase1 == null)
                     return new ApiResponse("Xatolik", false);
@@ -165,7 +167,7 @@ public class TransferService {
                     atmMoneyCaseRepos.save(atmMoneyCase);
                     atm.setAtmMoneyCase(atmMoneyCase);
                     atmRepos.save(atm);
-                    card.setBalance(card.getBalance() - (balance + balance * commission));
+                    card.setBalance(card.getBalance() - (balance.getUsd() + balance.getUsd() * commission));
                     cardRepos.save(card);
                     Transfer transfer = new Transfer();
                     transfer.setAtmId(atm.getId());
@@ -176,6 +178,12 @@ public class TransferService {
                     return new ApiResponse("Muvaffaqqiyatli", true);
                 } else return new ApiResponse("Xatolik", false);
             } else {
+
+                if (balance.getUzs() < (transferDto.getAmount() * 0.01) + transferDto.getAmount() ||
+                        transferDto.getAmount() > atm.getMaxWithdrawAmount() ||
+                        transferDto.getAmount() < atm.getMinWithdrawAmount())
+                    return new ApiResponse("Summa miqdori notog'ri kiritildi", false);
+
                 AtmMoneyCase atmMoneyCase1 = calculation.balanceToAtm(transferDto.getAmount(), "uzs");
                 if (atmMoneyCase1 == null)
                     return new ApiResponse("Xatolik", false);
@@ -191,9 +199,9 @@ public class TransferService {
                     atmMoneyCase.setUzs1000(atmMoneyCase.getUzs1000() - atmMoneyCase1.getUzs1000());
                     atmMoneyCaseRepos.save(atmMoneyCase);
                     if(card.getBank().getName().equalsIgnoreCase(atm.getBank().getName())) {
-                        card.setBalance(card.getBalance() - (balance + balance * 0.005));
+                        card.setBalance(card.getBalance() - (balance.getUzs() + balance.getUzs() * 0.005));
                     } else {
-                        card.setBalance(card.getBalance() - (balance + balance * commission));
+                        card.setBalance(card.getBalance() - (balance.getUzs() + balance.getUzs() * commission));
                     }
                     cardRepos.save(card);
                     Transfer transfer = new Transfer();
@@ -203,8 +211,8 @@ public class TransferService {
                     transfer.setTransferType(TransferType.OUTCOME);
                     transferRepos.save(transfer);
 
-                    Integer newBalance = calculation.balance(atmMoneyCase);
-                    if (newBalance <= 10000000) {
+                    ApiResponse newBalance = calculation.balance(atmMoneyCase);
+                    if (newBalance.isSuccess()) {// lessMoney check (no success it's wrong)
                         User user = userRepos.findByRolesId(2);
                         ApiResponse apiResponse = emailSender.sendEmailToEmployee(user.getEmail(), "Bankomat hisobi", "Bankomatda 10 000 000 dan kam pul qoldi");
                         return apiResponse;

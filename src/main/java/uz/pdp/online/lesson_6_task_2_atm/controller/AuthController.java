@@ -14,7 +14,7 @@ import uz.pdp.online.lesson_6_task_2_atm.service.AuthService;
 public class AuthController {
 
     @Autowired
-    AuthService authService;
+    private AuthService authService;
 
     @PostMapping("/register")
     public HttpEntity<?> register(@RequestBody RegisterDto registerDto) {

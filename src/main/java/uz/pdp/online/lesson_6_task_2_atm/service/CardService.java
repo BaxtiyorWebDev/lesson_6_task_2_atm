@@ -14,6 +14,7 @@ import uz.pdp.online.lesson_6_task_2_atm.repository.CardRepos;
 import uz.pdp.online.lesson_6_task_2_atm.repository.CardTypeRepos;
 import uz.pdp.online.lesson_6_task_2_atm.repository.UserRepos;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,13 +22,13 @@ import java.util.UUID;
 public class CardService {
 
     @Autowired
-    CardRepos cardRepos;
+    private CardRepos cardRepos;
     @Autowired
-    CardTypeRepos cardTypeRepos;
+    private CardTypeRepos cardTypeRepos;
     @Autowired
-    BankRepos bankRepos;
+    private BankRepos bankRepos;
     @Autowired
-    UserRepos userRepos;
+    private UserRepos userRepos;
 
 
     public ApiResponse addCard(CardDto cardDto) {
@@ -35,13 +36,23 @@ public class CardService {
         if (detectAuthentication) {
             Optional<Card> byNumberAndUserId = cardRepos.findByNumberAndUserId(cardDto.getNumber(), cardDto.getUserId());
             if (byNumberAndUserId.isPresent())
-                return new ApiResponse("Bunday karta MO da mavjud",false);
+                return new ApiResponse("Bunday karta MO da mavjud", false);
             Card card = new Card();
             card.setBank(bankRepos.getById(cardDto.getBankId()));
             card.setHolderName(cardDto.getHolderName());
             card.setPinCode(cardDto.getPinCode());
             card.setCardType(cardTypeRepos.getById(cardDto.getCardTypeId()));
             card.setUser(userRepos.getById(cardDto.getUserId()));
+            card.setExpireDate(new Date(new Date().getYear() + 5, new Date().getMonth(), new Date().getDate()));
+            while (true) {
+                card.setNumber((long) (Math.random() * 10000000000000000L));
+                card.setCvv((int) (Math.random() * 1000));
+                boolean existsByNumberAndCvv = cardRepos.existsByNumberAndCvv(card.getNumber(), card.getCvv());
+                if (!existsByNumberAndCvv && card.getNumber() != 16 || card.getCvv() != 3)
+                    break;
+            }
+
+
             cardRepos.save(card);
             return new ApiResponse("Karta saqlandi. Login: " + card.getNumber() + ". Pin code: " + card.getPinCode(), true);
         }

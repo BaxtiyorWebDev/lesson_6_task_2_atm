@@ -5,13 +5,14 @@ import org.springframework.stereotype.Component;
 import uz.pdp.online.lesson_6_task_2_atm.entity.AtmMoneyCase;
 import uz.pdp.online.lesson_6_task_2_atm.entity.CardType;
 import uz.pdp.online.lesson_6_task_2_atm.entity.enums.CardTypeEnum;
+import uz.pdp.online.lesson_6_task_2_atm.payload.ApiResponse;
 import uz.pdp.online.lesson_6_task_2_atm.repository.AtmRepos;
 
 @Component
 public class Calculation {
 
     @Autowired
-    AtmRepos atmRepos;
+    private AtmRepos atmRepos;
 
     public CardTypeEnum contains(String test) {
         for (CardTypeEnum value : CardTypeEnum.values()) {
@@ -21,18 +22,25 @@ public class Calculation {
         return null;
     }
 
-    public Integer balance(AtmMoneyCase moneyCase) {
-        return 1000 * moneyCase.getUzs1000() +
+    public ApiResponse balance(AtmMoneyCase moneyCase) {
+        Integer uzs;
+        Integer usd;
+        boolean lessMoney = false;
+        uzs = 1000 * moneyCase.getUzs1000() +
                 5000 * moneyCase.getUzs5000() +
                 10000 * moneyCase.getUzs10000() +
                 50000 * moneyCase.getUzs50000() +
-                100000 * moneyCase.getUzs100000() +
+                100000 * moneyCase.getUzs100000();
 
-                moneyCase.getUsd1() +
+        usd = moneyCase.getUsd1() +
                 5 * moneyCase.getUsd5() +
                 10 * moneyCase.getUsd10() +
                 50 * moneyCase.getUsd50() +
                 100 * moneyCase.getUsd100();
+        if (uzs < 10_000_000 || usd < 10_000) {
+            lessMoney = true;
+        }
+        return new ApiResponse(lessMoney, uzs, usd);
     }
 
     public AtmMoneyCase balanceToAtm(Integer balance, String type) {
@@ -52,7 +60,7 @@ public class Calculation {
         atmMoneyCase.setUsd10(balance % 100 % 50 / 10);
         atmMoneyCase.setUsd5(balance % 100 % 50 % 10 / 5);
         atmMoneyCase.setUsd1(balance % 100 % 50 % 10 % 5);
-        if (balance % 100 % 50 % 10 % 5 ==0)
+        if (balance % 100 % 50 % 10 % 5 == 0)
             return atmMoneyCase;
         return null;
     }

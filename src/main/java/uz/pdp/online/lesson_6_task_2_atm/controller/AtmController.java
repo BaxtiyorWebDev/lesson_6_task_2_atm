@@ -20,9 +20,9 @@ import java.util.UUID;
 public class AtmController {
 
     @Autowired
-    AtmService atmService;
+    private AtmService atmService;
     @Autowired
-    TransferService transferService;
+    private TransferService transferService;
 
     @PostMapping
     public HttpEntity<?> addAtm(@RequestBody AtmDto atmDto) {
@@ -37,9 +37,9 @@ public class AtmController {
     }
 
     @GetMapping("/{id}")
-    public Atm getAtmById(@PathVariable UUID id) {
+    public HttpEntity<?> getAtmById(@PathVariable UUID id) {
         Atm atm = atmService.getById(id);
-        return atm;
+        return ResponseEntity.status(atm!=null?200:409).body(atm);
     }
 
     @PutMapping("/{id}")

@@ -17,7 +17,7 @@ import java.util.List;
 public class BankController {
 
     @Autowired
-    BankService bankService;
+    private BankService bankService;
 
 
     @PostMapping

@@ -11,5 +11,19 @@ public class ApiResponse {
 
     private String message;
     private boolean success;
+
+    private Integer uzs;
+    private Integer usd;
+
+    public ApiResponse(String message, boolean success) {
+        this.message = message;
+        this.success = success;
+    }
+
+    public ApiResponse(boolean success, Integer uzs, Integer usd) {
+        this.success = success;
+        this.uzs = uzs;
+        this.usd = usd;
+    }
 }
 

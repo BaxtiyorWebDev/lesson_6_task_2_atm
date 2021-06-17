@@ -22,19 +22,19 @@ public class Card extends AbsEntity {
 
 
     @Column(nullable = false, unique = true)
-    private Long number = (long) (Math.random() * 10000000000000000L); // 16 digit
+    private Long number; // 16 digit
 
     @Column(nullable = false)
     private short pinCode; // 4 digit
 
     @Column(nullable = false)
-    private Integer cvv = (int) (Math.random() * 1000); // 3 digit
+    private Integer cvv; // 3 digit
 
     @Column(nullable = false)
     private String holderName;
 
     @Column(nullable = false)
-    private Date expireDate = new Date(new Date().getYear()+5,new Date().getMonth(),new Date().getDate());
+    private Date expireDate;
 
 
     @ManyToOne
