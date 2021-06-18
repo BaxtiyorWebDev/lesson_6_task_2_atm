@@ -20,6 +20,9 @@ public class CardDto {
     @NotNull
     private Integer cardTypeId;
 
+    @NotNull
+    private Integer roleId;
+
     /**
      * for put method
      */

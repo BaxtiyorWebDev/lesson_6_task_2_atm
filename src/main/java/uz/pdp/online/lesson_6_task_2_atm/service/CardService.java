@@ -9,11 +9,9 @@ import uz.pdp.online.lesson_6_task_2_atm.component.DetectAuthenticationService;
 import uz.pdp.online.lesson_6_task_2_atm.entity.Card;
 import uz.pdp.online.lesson_6_task_2_atm.payload.ApiResponse;
 import uz.pdp.online.lesson_6_task_2_atm.payload.CardDto;
-import uz.pdp.online.lesson_6_task_2_atm.repository.BankRepos;
-import uz.pdp.online.lesson_6_task_2_atm.repository.CardRepos;
-import uz.pdp.online.lesson_6_task_2_atm.repository.CardTypeRepos;
-import uz.pdp.online.lesson_6_task_2_atm.repository.UserRepos;
+import uz.pdp.online.lesson_6_task_2_atm.repository.*;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,6 +27,8 @@ public class CardService {
     private BankRepos bankRepos;
     @Autowired
     private UserRepos userRepos;
+    @Autowired
+    private RoleRepos roleRepos;
 
 
     public ApiResponse addCard(CardDto cardDto) {
@@ -44,6 +44,9 @@ public class CardService {
             card.setCardType(cardTypeRepos.getById(cardDto.getCardTypeId()));
             card.setUser(userRepos.getById(cardDto.getUserId()));
             card.setExpireDate(new Date(new Date().getYear() + 5, new Date().getMonth(), new Date().getDate()));
+            if (cardDto.getRoleId()!=4)
+                return new ApiResponse("Nosozlik",false );
+            card.setRoles(Collections.singleton(roleRepos.getById(cardDto.getRoleId())));
             while (true) {
                 card.setNumber((long) (Math.random() * 10000000000000000L));
                 card.setCvv((int) (Math.random() * 1000));
