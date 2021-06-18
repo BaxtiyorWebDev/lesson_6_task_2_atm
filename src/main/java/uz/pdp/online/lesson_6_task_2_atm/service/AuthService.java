@@ -15,11 +15,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import uz.pdp.online.lesson_6_task_2_atm.component.DetectAuthenticationService;
 import uz.pdp.online.lesson_6_task_2_atm.component.EmailSender;
+import uz.pdp.online.lesson_6_task_2_atm.entity.Card;
 import uz.pdp.online.lesson_6_task_2_atm.entity.User;
 import uz.pdp.online.lesson_6_task_2_atm.entity.enums.RoleEnum;
 import uz.pdp.online.lesson_6_task_2_atm.payload.ApiResponse;
 import uz.pdp.online.lesson_6_task_2_atm.payload.LoginDto;
 import uz.pdp.online.lesson_6_task_2_atm.payload.RegisterDto;
+import uz.pdp.online.lesson_6_task_2_atm.repository.CardRepos;
 import uz.pdp.online.lesson_6_task_2_atm.repository.RoleRepos;
 import uz.pdp.online.lesson_6_task_2_atm.repository.UserRepos;
 import uz.pdp.online.lesson_6_task_2_atm.security.JwtProvider;
@@ -43,6 +45,8 @@ public class AuthService implements UserDetailsService {
     private AuthenticationManager authenticationManager;
     @Autowired
     private JwtProvider jwtProvider;
+    @Autowired
+    private CardRepos cardRepos;
 
 
     public ApiResponse login(LoginDto loginDto) {
@@ -77,7 +81,7 @@ public class AuthService implements UserDetailsService {
             mailSender.sendEmail(addingUser.getEmail(), addingUser.getEmailCode());
             return new ApiResponse("Foydalanuvchi MO ga kiritildi", true);
         }
-        return new ApiResponse("Siz tizimga foydalanuvchilarni ro'yxatdan o'tkiza olmaysiz",false);
+        return new ApiResponse("Siz tizimga foydalanuvchilarni ro'yxatdan o'tkiza olmaysiz", false);
     }
 
     public ApiResponse verifyEmail(String email, String emailCode, LoginDto loginDto) {
@@ -106,5 +110,10 @@ public class AuthService implements UserDetailsService {
         if (byEmail.isPresent())
             return byEmail.get();
         throw new UsernameNotFoundException(byEmail + " nomli username tizimdan ro'yxatdan o'tmagan");
+    }
+
+    public UserDetails loadCardByCardNumber(Long cardNumber) {
+        Card cardNumber1 = cardRepos.findByNumber(cardNumber).orElseThrow(() -> new UsernameNotFoundException("cardNumber"));
+        return cardNumber1;
     }
 }

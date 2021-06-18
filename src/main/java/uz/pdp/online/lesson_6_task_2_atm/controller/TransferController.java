@@ -7,12 +7,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uz.pdp.online.lesson_6_task_2_atm.entity.AtmMoneyCase;
 import uz.pdp.online.lesson_6_task_2_atm.payload.ApiResponse;
 import uz.pdp.online.lesson_6_task_2_atm.payload.TransferDto;
 import uz.pdp.online.lesson_6_task_2_atm.service.TransferService;
 
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/transfer")
