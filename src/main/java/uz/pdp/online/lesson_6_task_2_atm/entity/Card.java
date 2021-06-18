@@ -15,6 +15,7 @@ import uz.pdp.online.lesson_6_task_2_atm.entity.template.AbsEntity;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
@@ -52,6 +53,9 @@ public class Card extends AbsEntity implements UserDetails {
     @ManyToOne
     private User user;
 
+    @ManyToMany
+    private Set<Role> roles;
+
     private Double balance;
 
     private boolean accountNonExpired = true;
@@ -65,7 +69,7 @@ public class Card extends AbsEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return this.roles;
     }
 
     @Override
